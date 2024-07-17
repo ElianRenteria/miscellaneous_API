@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-import json
-import ollama
+import json, requests
 app = FastAPI()
 
 
@@ -32,6 +31,6 @@ async def root():
 
 @app.get("/api/trivia")
 async def generate_question():
-    response = ollama.generate(model='llama3', prompt="""Generate me a random trivia question with the correct answer and 3 false answers and respond ONLY in json format as given here: {"question":"","answers":["","", "", ""]} for the answers value it should be an array where the first index is the correct answer.""")
-    return parse_json_from_string(response["response"])
+    response = requests.post("http://elianrenteria.net:8000/generate",json={"message":"hi"})
+    return response #parse_json_from_string(response["response"])
 
