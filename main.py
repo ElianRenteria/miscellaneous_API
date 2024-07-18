@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 import json, requests
+from pydantic import BaseModel
 app = FastAPI()
+
+# Define the Pydantic model for the request body
+class MessageRequest(BaseModel):
+    category: str
 
 
 def parse_json_from_string(string_with_json):
@@ -34,3 +39,9 @@ async def generate_question():
     response = requests.post("http://elianrenteria.net:8000/generate", json={"message": "Generate me a random trivia question with the correct answer and 3 false answers and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."})
     return parse_json_from_string(response.json()["response"])
 
+@app.post("/api/trivia")
+async def generate_question(request: MessageRequest):
+    category = request.category
+    message = "Generate me a random trivia question with the correct answer and 3 false answers, The Topic should be " + category + " and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."
+    response = requests.post("http://elianrenteria.net:8000/generate", json={"message": message})
+    return parse_json_from_string(response.json()["response"])
