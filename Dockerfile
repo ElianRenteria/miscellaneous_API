@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM arm32v7/python:3.9-slim
+FROM arm32v7/python:3.9
 
 # Set the working directory in the container
 WORKDIR /app
