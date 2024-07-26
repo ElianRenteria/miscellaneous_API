@@ -78,3 +78,11 @@ async def get_weather(request: WeatherRequest):
         return { "weather": data["main"], "wind": data["wind"], "misc": data["weather"] }
     except():
         return {"Error": "500"}
+
+@app.get("/api/fact")
+async def get_fact():
+    try:
+        response = requests.get("https://uselessfacts.jsph.pl/api/v2/facts/random?language=en")
+        return {"fact":response.json()["text"]}
+    except():
+        return {"Error": "500"}
