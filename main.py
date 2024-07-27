@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import json, requests
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
-
+import httpx
 
 load_dotenv()
 
@@ -76,16 +76,33 @@ async def generate_question(request: MessageRequest):
 
 @app.get("/api/weather")
 async def get_weather(request: WeatherRequest):
-    try:
-        city = request.city
-        geolocation = requests.get("http://api.openweathermap.org/geo/1.0/direct?q="+city+"&limit=1&appid="+str(open_weather_key))
-        lat = geolocation.json()[0]["lat"]
-        lon = geolocation.json()[0]["lon"]
-        weather = requests.get("https://api.openweathermap.org/data/2.5/weather?lat="+str(lat)+"&lon="+str(lon)+"&appid="+str(open_weather_key))
-        data = weather.json()
-        return { "weather": data["main"], "wind": data["wind"], "misc": data["weather"] }
-    except():
-        return {"Error": "500"}
+    async with httpx.AsyncClient() as client:
+        try:
+            # Fetch geolocation data
+            geolocation_response = await client.get(f"http://api.openweathermap.org/geo/1.0/direct?q={request.city}&limit=1&appid={open_weather_key}")
+            geolocation_response.raise_for_status()
+            geolocation_data = geolocation_response.json()
+            if not geolocation_data:
+                raise HTTPException(status_code=404, detail="City not found")
+            else:
+                print(geolocation_data)
+
+            lat = geolocation_data[0]["lat"]
+            lon = geolocation_data[0]["lon"]
+
+            # Fetch weather data
+            weather_response = await client.get(f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={open_weather_key}")
+            weather_response.raise_for_status()
+            weather_data = weather_response.json()
+
+            return {"weather": weather_data["main"], "wind": weather_data["wind"], "misc": weather_data["weather"]}
+
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
+        except httpx.HTTPStatusError as e:
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP status error: {str(e)}")
+        except KeyError as e:
+            raise HTTPException(status_code=500, detail=f"Key error: {str(e)}")
 
 @app.get("/api/fact")
 async def get_fact():
