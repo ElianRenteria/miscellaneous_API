@@ -19,10 +19,6 @@ class MessageRequest(BaseModel):
     category: str
 
 
-class WeatherRequest(BaseModel):
-    city: str
-
-
 def parse_json_from_string(string_with_json):
     # Find where the JSON starts
     start_index = string_with_json.find('{')
@@ -77,10 +73,10 @@ async def generate_question(request: MessageRequest):
 
 
 @app.get("/api/weather")
-async def get_weather(request: WeatherRequest):
+async def get_weather(city: str):
     try:
         # Fetch geolocation data
-        geolocation_response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={request.city}&limit=1&appid={open_weather_key}")
+        geolocation_response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={open_weather_key}")
         geolocation_data = geolocation_response.json()
         if not geolocation_data:
             return {"error": "geolocation api failed"}
