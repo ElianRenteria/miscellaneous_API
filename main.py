@@ -4,7 +4,7 @@ import json
 import requests
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import os
+import os, random
 
 load_dotenv()
 
@@ -66,6 +66,14 @@ async def root():
 async def generate_question():
     response = requests.post(generate_api_url, json={"message": "Generate me a random trivia question with the correct answer and 3 false answers and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."})
     return parse_json_from_string(response.json()["response"])
+
+@app.get("/api/wordle")
+async def pick_word():
+    with open('./data/wordle-words.txt', 'r') as file:
+        words = file.readlines()
+    words = [word.strip() for word in words]
+    random_word = random.choice(words)
+    return {"word": random_word}
 
 
 @app.post("/api/trivia")
