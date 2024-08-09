@@ -89,8 +89,9 @@ async def is_valid_word(request: ValidWordleRequest):
 
 @app.post("/api/trivia")
 async def generate_question(request: MessageRequest):
-    if requests.word in words:
-        return {"isValid": True}
+    category = request.category
+    message = "Generate me a random trivia question with the correct answer and 3 false answers, The Topic should be " + category + " and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."
+    response = requests.post(generate_api_url, json={"message": message})
     return parse_json_from_string(response.json()["response"])
 
 
