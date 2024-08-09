@@ -13,11 +13,20 @@ generate_api_url = os.getenv('GENERATE_API_URL')
 
 app = FastAPI()
 
+with open('./data/wordle-words.txt', 'r') as file:
+    words = file.readlines()
+words = [word.strip() for word in words]
 
 # Define the Pydantic model for the request body
 class MessageRequest(BaseModel):
     category: str
 
+class WeatherRequest(BaseModel):
+    city: str
+
+class ValidWordleRequest(BaseModel):
+    word: str
+      
 
 def parse_json_from_string(string_with_json):
     # Find where the JSON starts
@@ -65,11 +74,16 @@ async def generate_question():
 
 @app.get("/api/wordle")
 async def pick_word():
-    with open('./data/wordle-words.txt', 'r') as file:
-        words = file.readlines()
-    words = [word.strip() for word in words]
+    global words
     random_word = random.choice(words)
     return {"word": random_word}
+
+@app.get("/api/validWordleWord")
+async def is_valid_word(request: ValidWordleRequest):
+    global words
+    if request.word in words:
+        return {"isValid": True}
+    return {"isValid": False}
 
 
 @app.post("/api/trivia")
