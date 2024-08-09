@@ -13,6 +13,9 @@ generate_api_url = os.getenv('GENERATE_API_URL')
 
 app = FastAPI()
 
+with open('./data/wordle-words.txt', 'r') as file:
+    words = file.readlines()
+words = [word.strip() for word in words]
 
 # Define the Pydantic model for the request body
 class MessageRequest(BaseModel):
@@ -21,6 +24,9 @@ class MessageRequest(BaseModel):
 
 class WeatherRequest(BaseModel):
     city: str
+
+class ValidWordleRequest(BaseModel):
+    word: str
 
 
 def parse_json_from_string(string_with_json):
@@ -69,18 +75,22 @@ async def generate_question():
 
 @app.get("/api/wordle")
 async def pick_word():
-    with open('./data/wordle-words.txt', 'r') as file:
-        words = file.readlines()
-    words = [word.strip() for word in words]
+    global words
     random_word = random.choice(words)
     return {"word": random_word}
+
+@app.get("/api/validWordleWord")
+async def is_valid_word(request: ValidWordleRequest):
+    global words
+    if request.word in words:
+        return {"isValid": True}
+    return {"isValid": False}
 
 
 @app.post("/api/trivia")
 async def generate_question(request: MessageRequest):
-    category = request.category
-    message = "Generate me a random trivia question with the correct answer and 3 false answers, The Topic should be " + category + " and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."
-    response = requests.post(generate_api_url, json={"message": message})
+    if requests.word in words:
+        return {"isValid": True}
     return parse_json_from_string(response.json()["response"])
 
 
