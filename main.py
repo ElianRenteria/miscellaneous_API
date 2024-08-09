@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import requests
@@ -23,9 +23,6 @@ class MessageRequest(BaseModel):
 
 class WeatherRequest(BaseModel):
     city: str
-
-class ValidWordleRequest(BaseModel):
-    word: str
       
 
 def parse_json_from_string(string_with_json):
@@ -79,9 +76,9 @@ async def pick_word():
     return {"word": random_word}
 
 @app.get("/api/validWordleWord")
-async def is_valid_word(request: ValidWordleRequest):
+async def is_valid_word(word: str = Query(...)):
     global words
-    if request.word in words:
+    if word in words:
         return {"isValid": True}
     return {"isValid": False}
 
@@ -95,7 +92,7 @@ async def generate_question(request: MessageRequest):
 
 
 @app.get("/api/weather")
-async def get_weather(city: str):
+async def get_weather(city: str = Query(...)):
     try:
         # Fetch geolocation data
         geolocation_response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={open_weather_key}")
