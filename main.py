@@ -78,7 +78,7 @@ async def pick_word():
 @app.get("/api/validWordleWord")
 async def is_valid_word(word: str = Query(...)):
     global words
-    if word in words:
+    if word.lower() in words:
         return {"isValid": True}
     return {"isValid": False}
 
