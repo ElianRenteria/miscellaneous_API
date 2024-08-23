@@ -127,7 +127,7 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 
-@app.post("/upload/")
+@app.post("api/upload")
 async def upload_files(files: list[UploadFile]):
     for file in files:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
@@ -136,7 +136,7 @@ async def upload_files(files: list[UploadFile]):
     return {"filenames": [file.filename for file in files]}
 
 
-@app.get("/download/")
+@app.get("api/download")
 def download_all_files():
     zip_filename = "all_files.zip"
     zip_filepath = os.path.join(UPLOAD_DIR, zip_filename)
@@ -150,7 +150,7 @@ def download_all_files():
     return FileResponse(zip_filepath, filename=zip_filename)
 
 
-@app.post("/clear/")
+@app.post("api/clear")
 def clear_files():
     for root, dirs, files in os.walk(UPLOAD_DIR):
         for file in files:
