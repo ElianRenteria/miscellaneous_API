@@ -121,7 +121,7 @@ async def get_fact():
     except():
         return {"Error": "facts api error"}
 
-UPLOAD_DIR = ""
+UPLOAD_DIR = "/home/elianrenteria/file_share_app"
 
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
