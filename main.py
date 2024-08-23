@@ -1,10 +1,13 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, File, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import requests
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import os, random
+import shutil
+import zipfile
 
 load_dotenv()
 
@@ -17,7 +20,6 @@ with open('./data/wordle-words.txt', 'r') as file:
     words = file.readlines()
 words = [word.strip() for word in words]
 
-# Define the Pydantic model for the request body
 class MessageRequest(BaseModel):
     category: str
 
@@ -26,17 +28,13 @@ class WeatherRequest(BaseModel):
       
 
 def parse_json_from_string(string_with_json):
-    # Find where the JSON starts
     start_index = string_with_json.find('{')
     if start_index == -1:
         raise ValueError("No JSON object found in the string")
-    # Find where the JSON ends
     end_index = string_with_json.rfind('}') + 1
     if end_index == 0:
         raise ValueError("Invalid JSON format: No closing '}' found")
-    # Extract the JSON substring
     json_string = string_with_json[start_index:end_index]
-    # Parse the JSON string into a Python dictionary
     parsed_json = json.loads(json_string)
     return parsed_json
 
@@ -48,7 +46,6 @@ origins = [
     "http://127.0.0.1:5500",
     "https://coderlab.work",
     "https://elianrenteria.github.io"
-    # Add other origins as needed
 ]
 
 app.add_middleware(
@@ -95,7 +92,6 @@ async def generate_question(request: MessageRequest):
 @app.get("/api/weather")
 async def get_weather(city: str = Query(...)):
     try:
-        # Fetch geolocation data
         geolocation_response = requests.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={open_weather_key}")
         geolocation_data = geolocation_response.json()
         if not geolocation_data:
@@ -106,7 +102,6 @@ async def get_weather(city: str = Query(...)):
         lat = geolocation_data[0]["lat"]
         lon = geolocation_data[0]["lon"]
 
-        # Fetch weather data
         weather_response = requests.get(f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={open_weather_key}")
         weather_response.raise_for_status()
         weather_data = weather_response.json()
@@ -125,3 +120,39 @@ async def get_fact():
         return {"fact": response.json()["text"]}
     except():
         return {"Error": "facts api error"}
+
+UPLOAD_DIR = ""
+
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+
+@app.post("/upload/")
+async def upload_files(files: list[UploadFile]):
+    for file in files:
+        file_path = os.path.join(UPLOAD_DIR, file.filename)
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+    return {"filenames": [file.filename for file in files]}
+
+
+@app.get("/download/")
+def download_all_files():
+    zip_filename = "all_files.zip"
+    zip_filepath = os.path.join(UPLOAD_DIR, zip_filename)
+
+    with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+        for root, _, files in os.walk(UPLOAD_DIR):
+            for file in files:
+                if file != zip_filename:  # Avoid zipping the zip file itself
+                    zipf.write(os.path.join(root, file), file)
+
+    return FileResponse(zip_filepath, filename=zip_filename)
+
+
+@app.post("/clear/")
+def clear_files():
+    for root, dirs, files in os.walk(UPLOAD_DIR):
+        for file in files:
+            os.remove(os.path.join(root, file))
+    return JSONResponse(content={"message": "All files have been deleted."})
