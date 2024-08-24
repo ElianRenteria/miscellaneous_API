@@ -57,11 +57,6 @@ app.add_middleware(
 )
 
 
-@app.get("/api")
-async def root():
-    return {"message": "Hello World"}
-
-
 @app.get("/api/trivia")
 async def generate_question():
     response = requests.post(generate_api_url, json={"message": "Generate me a random trivia question with the correct answer and 3 false answers and respond ONLY in json format as given here: {\"question\":\"\",\"answers\":[\"\",\"\", \"\", \"\"]} for the answers value it should be an array where the first index is the correct answer."})
