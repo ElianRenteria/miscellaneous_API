@@ -13,6 +13,7 @@ load_dotenv()
 
 open_weather_key = os.getenv('OPEN_WEATHER_KEY')
 generate_api_url = os.getenv('GENERATE_API_URL')
+generate_note_prompt = os.getenv('GENERATE_NOTE_PROMPT')
 
 app = FastAPI()
 
@@ -25,7 +26,14 @@ class MessageRequest(BaseModel):
 
 class WeatherRequest(BaseModel):
     city: str
-      
+
+class GenerateRequest(BaseModel):
+    message: str
+
+class GenerateNote(BaseModel):
+    student_name: str
+    previous_note: str
+    concepts: str
 
 def parse_json_from_string(string_with_json):
     start_index = string_with_json.find('{')
@@ -83,6 +91,16 @@ async def generate_question(request: MessageRequest):
     response = requests.post(generate_api_url, json={"message": message})
     return parse_json_from_string(response.json()["response"])
 
+@app.post("/api/generate")
+async def gernerate(request: GenerateRequest):
+    response = requests.post(generate_api_url, json={"message": request.message})
+    return response.json()["response"]
+
+@app.post("api/note")
+async def generate_note(request: GenerateNote):
+    message = f"{generate_note_prompt}name: {request.student_name}; previous note: {request.previous_note}; concepts: {request.concepts}"
+    response = requests.post(generate_api_url, json={"message": message})
+    return response.json()["response"]
 
 @app.get("/api/weather")
 async def get_weather(city: str = Query(...)):

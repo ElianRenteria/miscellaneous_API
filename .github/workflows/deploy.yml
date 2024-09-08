@@ -29,6 +29,7 @@ jobs:
             echo "Creating .env file..."
             echo "OPEN_WEATHER_KEY=${{ secrets.OPEN_WEATHER_API_KEY }}" > .env
             echo "GENERATE_API_URL=${{ secrets.GENERATE_API_URL }}" >> .env
+            echo "GENERATE_NOTE_PROMPT=${{ secrets.GENERATE_NOTE_PROMPT }}" >> .env
           fi
           
           docker build -t my_fast_api . || exit 1
