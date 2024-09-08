@@ -98,7 +98,7 @@ async def gernerate(request: GenerateRequest):
 
 @app.post("/api/note")
 async def generate_note(request: GenerateNote):
-    message = f"{generate_note_prompt}name: {request.student_name}; previous note: {request.previous_note}; concepts: {request.concepts}"
+    message = f"{generate_note_prompt}\nname: {request.student_name}; \nprevious note: {request.previous_note}; \nconcepts: {request.concepts}"
     response = requests.post(generate_api_url, json={"message": message})
     return response.json()["response"]
 
