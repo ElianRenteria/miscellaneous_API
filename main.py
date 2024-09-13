@@ -13,6 +13,7 @@ load_dotenv()
 
 open_weather_key = os.getenv('OPEN_WEATHER_KEY')
 generate_api_url = os.getenv('GENERATE_API_URL')
+api_key = os.getenv('GENERATE_API_KEY')
 generate_note_prompt = os.getenv('GENERATE_NOTE_PROMPT')
 
 app = FastAPI()
@@ -29,6 +30,7 @@ class WeatherRequest(BaseModel):
 
 class GenerateRequest(BaseModel):
     message: str
+    key: str
 
 class GenerateNote(BaseModel):
     student_name: str
@@ -93,6 +95,8 @@ async def generate_question(request: MessageRequest):
 
 @app.post("/api/generate")
 async def gernerate(request: GenerateRequest):
+    if request.key != api_key:
+        return {"error": "Invalid API Key"}
     response = requests.post(generate_api_url, json={"message": request.message})
     return response.json()["response"]
 
