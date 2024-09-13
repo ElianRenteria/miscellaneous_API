@@ -95,10 +95,10 @@ async def generate_question(request: MessageRequest):
 
 @app.post("/api/generate")
 async def gernerate(request: GenerateRequest):
-    if request.key != api_key:
-        return {"error": "Invalid API Key"}
-    response = requests.post(generate_api_url, json={"message": request.message})
-    return response.json()["response"]
+    if request.key == api_key:
+        response = requests.post(generate_api_url, json={"message": request.message})
+        return response.json()["response"]
+    return {"error": "Invalid API Key"}
 
 @app.post("/api/note")
 async def generate_note(request: GenerateNote):
