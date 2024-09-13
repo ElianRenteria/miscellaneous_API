@@ -23,7 +23,7 @@ jobs:
         script: |
           cd ~/miscellaneous_API || exit 1
           git pull || exit 1
-          
+          rm ~/.env || true
           # Check if .env file exists, if not, create it with default content
           if [ ! -f .env ]; then
             echo "Creating .env file..."
