@@ -5,9 +5,12 @@ import json
 import requests
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import os, random
+import os, random, io
 import shutil
 import zipfile
+from rembg import remove
+from PIL import Image
+from tempfile import NamedTemporaryFile
 
 load_dotenv()
 
@@ -173,3 +176,20 @@ def clear_files():
         for file in files:
             os.remove(os.path.join(root, file))
     return JSONResponse(content={"message": "All files have been deleted."})
+
+
+@app.post("/remove-bg")
+async def remove_bg(image: UploadFile = File(...)):
+    contents = await image.read()
+    input_image = Image.open(io.BytesIO(contents))
+
+    # Remove the background
+    output_image = remove(input_image)
+
+    # Save the output image to a temporary file
+    with NamedTemporaryFile(delete=False, suffix=".png") as tmp:
+        output_image.save(tmp, format="PNG")
+        tmp_path = tmp.name
+
+    # Return the image as a file response
+    return FileResponse(tmp_path, media_type="image/png", filename="processed-image.png")
