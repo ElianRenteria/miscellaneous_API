@@ -178,7 +178,7 @@ def clear_files():
     return JSONResponse(content={"message": "All files have been deleted."})
 
 
-@app.post("/remove-bg")
+@app.post("/api/remove-bg")
 async def remove_bg(image: UploadFile = File(...)):
     contents = await image.read()
     input_image = Image.open(io.BytesIO(contents))
