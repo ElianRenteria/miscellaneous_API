@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, File, UploadFile
+from fastapi import FastAPI, Query, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -11,6 +11,7 @@ import zipfile
 from rembg import remove
 from PIL import Image
 from tempfile import NamedTemporaryFile
+import shutil
 
 load_dotenv()
 
@@ -148,11 +149,11 @@ if not os.path.exists(UPLOAD_DIR):
 
 
 @app.post("/api/upload")
-async def upload_files(files: list[UploadFile]):
+async def upload_files(files: list[UploadFile] = File(...)):
     for file in files:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
     return {"filenames": [file.filename for file in files]}
 
 
