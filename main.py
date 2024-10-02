@@ -40,6 +40,7 @@ class GenerateNote(BaseModel):
     student_name: str
     previous_note: str
     concepts: str
+    key:str
 
 def parse_json_from_string(string_with_json):
     start_index = string_with_json.find('{')
@@ -107,7 +108,7 @@ async def gernerate(request: GenerateRequest):
 @app.post("/api/note")
 async def generate_note(request: GenerateNote):
     message = f"{generate_note_prompt}\nname: {request.student_name}; \nprevious note: {request.previous_note}; \nconcepts: {request.concepts}"
-    response = requests.post(generate_api_url, json={"message": message})
+    response = requests.post(generate_api_url, json={"message": message, "key": request.key})
     return response.json()["response"]
 
 @app.get("/api/weather")
