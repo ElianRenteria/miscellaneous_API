@@ -12,6 +12,7 @@ from rembg import remove
 from PIL import Image
 from tempfile import NamedTemporaryFile
 import shutil
+import httpx
 
 load_dotenv()
 
@@ -195,3 +196,30 @@ async def remove_bg(image: UploadFile = File(...)):
 
     # Return the image as a file response
     return FileResponse(tmp_path, media_type="image/png", filename="processed-image.png")
+
+POKE_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/"
+
+@app.get("/pokemon")
+async def get_random_pokemon():
+    # Total number of Pokémon in the API (you could make this dynamic if necessary)
+    max_pokemon_id = 1025  # As of Gen 9
+
+    # Generate a random Pokémon ID
+    random_id = random.randint(1, max_pokemon_id)
+
+    # Fetch Pokémon data from PokéAPI
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{POKE_API_BASE_URL}{random_id}/")
+
+    if response.status_code == 200:
+        data = response.json()
+        pokemon_name = data['name']
+        pokemon_image = data['sprites']['front_default']
+
+        # Return the Pokémon name and image
+        return {
+            "name": pokemon_name,
+            "image": pokemon_image
+        }
+    else:
+        return {"error": "Failed to fetch data from PokeAPI"}
