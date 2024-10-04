@@ -199,7 +199,7 @@ async def remove_bg(image: UploadFile = File(...)):
 
 POKE_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/"
 
-@app.get("/pokemon")
+@app.get("/api/pokemon")
 async def get_random_pokemon():
     # Total number of Pokémon in the API (you could make this dynamic if necessary)
     max_pokemon_id = 1025  # As of Gen 9
