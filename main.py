@@ -12,7 +12,7 @@ from rembg import remove
 from PIL import Image
 from tempfile import NamedTemporaryFile
 import shutil
-import httpx
+from random import randint
 
 load_dotenv()
 
@@ -196,6 +196,28 @@ POKE_API_BASE_URL = "https://pokeapi.co/api/v2/pokemon/"
 
 @app.get("/api/pokemon")
 async def get_random_pokemon():
+    variables = {
+        "id": randint(1, 1025)
+    }
+
+    URL = "https://beta.pokeapi.co/graphql/v1beta"
+    query = """
+    query samplePokeAPIquery($id: Int!) {
+      pokemon_v2_pokemon(where: {id: {_eq: $id}}) {
+        name
+        pokemon_v2_pokemonsprites {
+          sprites(path: "front_default")
+        }
+      }
+    }
+    """
+    response = requests.post(URL, json={"query": query, "variables": variables}).json()
+    payload = {
+        "name": response["data"]["pokemon_v2_pokemon"][0]["name"],
+        "image": response["data"]["pokemon_v2_pokemon"][0]["pokemon_v2_pokemonsprites"][0]["sprites"]
+    }
+    return payload
+    '''
     # Total number of Pokémon in the API (you could make this dynamic if necessary)
     max_pokemon_id = 1025  # As of Gen 9
 
@@ -218,3 +240,4 @@ async def get_random_pokemon():
         }
     else:
         return {"error": "Failed to fetch data from PokeAPI"}
+    '''
