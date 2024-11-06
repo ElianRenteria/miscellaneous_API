@@ -5,7 +5,7 @@ import json
 import requests
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import os, random, io
+import os, random, io, csv
 import shutil
 import zipfile
 from rembg import remove
@@ -72,6 +72,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load the states from the CSV file into a list
+def load_states():
+    states = []
+    with open("states.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            states.append(row[0])  # Assuming each state is in the first column
+    return states
+
+# Initialize the list of states
+states = load_states()
+
+@app.get("/api/state")
+async def pick_state():
+    random_state = random.choice(states)
+    return {"state": random_state}
 
 @app.get("/api/wordle")
 async def pick_word():
