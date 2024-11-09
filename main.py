@@ -65,7 +65,7 @@ origins = [
     "http://127.0.0.1:5500",
     "https://coderlab.work",
     "https://elianrenteria.github.io",
-    "coderschoolpi.local",
+    "76.176.106.64",
 ]
 
 app.add_middleware(
