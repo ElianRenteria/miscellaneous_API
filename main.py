@@ -29,6 +29,9 @@ words = [word.strip() for word in words]
 
 class MessageRequest(BaseModel):
     category: str
+    
+class LCDMessageRequest(BaseModel):
+    message: str
 
 class WeatherRequest(BaseModel):
     city: str
@@ -257,3 +260,19 @@ async def get_random_pokemon():
     else:
         return {"error": "Failed to fetch data from PokeAPI"}
     '''
+
+LCDMessage = ""
+
+@app.post("/api/set_message")
+async def set_message(request: LCDMessageRequest):
+    if len(request.message) > 16:
+        return {"error": "Message is too long. Max 16 characters allowed."}
+    else:
+        global LCDMessage
+        LCDMessage = request.message
+        return {"message": LCDMessage}
+    
+@app.get("/api/get_message")
+async def get_message():
+    global LCDMessage
+    return {"message": LCDMessage}
