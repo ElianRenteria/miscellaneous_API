@@ -64,7 +64,8 @@ origins = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "https://coderlab.work",
-    "https://elianrenteria.github.io"
+    "https://elianrenteria.github.io",
+    "coderschoolpi.local",
 ]
 
 app.add_middleware(
