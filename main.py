@@ -13,6 +13,7 @@ from PIL import Image
 from tempfile import NamedTemporaryFile
 import shutil
 from random import randint
+import pandas as pd
 
 load_dotenv()
 
@@ -277,3 +278,15 @@ async def set_message(request: LCDMessageRequest):
 async def get_message():
     global LCDMessage
     return {"message": LCDMessage}
+
+# Specify the path to the CSV file
+path = "./starbucks_drinks.csv"
+
+# Load the CSV file into a DataFrame
+data = pd.read_csv(path)
+
+@app.get("/api/starbucks")
+async def get_random_starbucks_drink():
+    # Pick a new random row each time the endpoint is called
+    random_row = data.sample(n=1)
+    return {"drink": random_row.to_json(orient='records')}  # Use 'records' for better formatting
