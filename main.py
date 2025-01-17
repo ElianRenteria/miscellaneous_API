@@ -285,8 +285,8 @@ path = "./starbucks_drinks.csv"
 # Load the CSV file into a DataFrame
 data = pd.read_csv(path)
 image_data = {}
-with open('./starbucks_images.json', 'r') as f:
-    image_data = json.loads(f)
+#with open('./starbucks_images.json', 'r') as f:
+#    image_data = json.loads(f)
 
 @app.get("/api/starbucks")
 async def get_random_starbucks_drink():
