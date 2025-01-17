@@ -284,13 +284,45 @@ path = "./starbucks_drinks.csv"
 
 # Load the CSV file into a DataFrame
 data = pd.read_csv(path)
-image_data = {}
-#with open('./starbucks_images.json', 'r') as f:
-#    image_data = json.loads(f)
+image_data = {
+    "Brewed Coffee": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_DecafPikePlaceRoast.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caffè Latte": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_CaffeLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caffè Mocha (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220607_CaffeMocha.jpg?impolicy=1by1_wide_topcrop_630",
+    "Vanilla Latte (Or Other Flavoured Latte)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_CaffeLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caffè Americano": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_CaffeAmericano.jpg?impolicy=1by1_wide_topcrop_630",
+    "Cappuccino": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_Cappuccino.jpg?impolicy=1by1_wide_topcrop_630",
+    "Espresso": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_Espresso_Single.jpg?impolicy=1by1_wide_topcrop_630",
+    "Skinny Latte (Any Flavour)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_CaffeLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caramel Macchiato": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20211029_CaramelMacchiato.jpg?impolicy=1by1_wide_topcrop_630",
+    "White Chocolate Mocha (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_WhiteChocolateMocha.jpg?impolicy=1by1_wide_topcrop_630",
+    "Hot Chocolate (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190617_SignatureHotChocolate.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caramel Apple Spice (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190624_CaramelAppleSpice.jpg?impolicy=1by1_wide_topcrop_630",
+    "Tazo® Tea": "https://globalassets.starbucks.com/digitalassets/products/bev/ChaiBrewedTea.jpg?impolicy=1by1_wide_topcrop_630",
+    "Tazo® Chai Tea Latte": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220411_ChaiLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Tazo® Green Tea Latte": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20211115_MatchaTeaLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Tazo® Full-Leaf Tea Latte": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190624_RoyalEnglishBreakfastTeaLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Tazo® Full-Leaf Red Tea Latte (Vanilla Rooibos)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220411_ChaiLatte.jpg?impolicy=1by1_wide_topcrop_630",
+    "Iced Brewed Coffee (With Classic Syrup)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20210611_ColdBrew.jpg?impolicy=1by1_wide_topcrop_630",
+    "Iced Brewed Coffee (With Milk & Classic Syrup)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20210611_ColdBrew.jpg?impolicy=1by1_wide_topcrop_630",
+    "Shaken Iced Tazo® Tea (With Classic Syrup)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190531_IcedBlackTea.jpg?impolicy=1by1_wide_topcrop_630",
+    "Shaken Iced Tazo® Tea Lemonade (With Classic Syrup)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190531_IcedBlackTeaLemonade.jpg?impolicy=1by1_wide_topcrop_630",
+    "Banana Chocolate Smoothie": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220607_1509_PeppermintHotChocolate-onGreen-MOP_1800.jpg?impolicy=1by1_wide_topcrop_630",
+    "Orange Mango Banana Smoothie": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20221216_FrozenPineapplePassionfruitRefresherLemonade.jpg?impolicy=1by1_wide_topcrop_630",
+    "Strawberry Banana Smoothie": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20221216_FrozenStrawberryAcaiRefresherLemonade.jpg?impolicy=1by1_wide_topcrop_630",
+    "Coffee": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190528_CoffeeFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Mocha (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190528_MochaFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caramel (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220323_CaramelFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Java Chip (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190528_JavaChipFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Mocha": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190528_MochaFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Caramel": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220323_CaramelFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Java Chip": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20190528_JavaChipFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Strawberries & Crème (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20220323_StrawberryFrapp.jpg?impolicy=1by1_wide_topcrop_630",
+    "Vanilla Bean (Without Whipped Cream)": "https://globalassets.starbucks.com/digitalassets/products/bev/SBX20181113_VanillaBeanFrapp.jpg?impolicy=1by1_wide_topcrop_630"
+}
 
 @app.get("/api/starbucks")
 async def get_random_starbucks_drink():
     # Pick a new random row each time the endpoint is called
     random_row = data.sample(n=1)
     drink_data = json.loads(random_row.to_json(orient='records'))[0]
-    return {"drink": drink_data}  # Use 'records' for better formatting
+    return {"drink": drink_data, "image": image_data[drink_data["Beverage"]]}  # Use 'records' for better formatting
