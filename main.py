@@ -289,4 +289,4 @@ data = pd.read_csv(path)
 async def get_random_starbucks_drink():
     # Pick a new random row each time the endpoint is called
     random_row = data.sample(n=1)
-    return json.loads(random_row.to_json(orient='records'))  # Use 'records' for better formatting
+    return {"drink": json.loads(random_row.to_json(orient='records'))[0]}  # Use 'records' for better formatting
