@@ -284,9 +284,11 @@ path = "./starbucks_drinks.csv"
 
 # Load the CSV file into a DataFrame
 data = pd.read_csv(path)
+image_data = json.loads("./starbucks_images.json")
 
 @app.get("/api/starbucks")
 async def get_random_starbucks_drink():
     # Pick a new random row each time the endpoint is called
     random_row = data.sample(n=1)
-    return {"drink": json.loads(random_row.to_json(orient='records'))[0]}  # Use 'records' for better formatting
+    drink_data = json.loads(random_row.to_json(orient='records'))[0]
+    return {"drink": drink_data, "image": image_data[drink_data["Beverage"]]}  # Use 'records' for better formatting
