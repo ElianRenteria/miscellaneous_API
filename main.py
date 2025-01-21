@@ -60,15 +60,15 @@ def parse_json_from_string(string_with_json):
 
 
 # Add CORS middleware
-'''origins = [
+origins = [
     "http://localhost",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
     "https://coderlab.work",
     "https://elianrenteria.github.io",
     "76.176.106.64",
-]'''
-origins = ["*"]
+]
+# origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
