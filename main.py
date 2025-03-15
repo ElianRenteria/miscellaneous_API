@@ -14,6 +14,11 @@ from tempfile import NamedTemporaryFile
 import shutil
 from random import randint
 import pandas as pd
+from pathlib import Path
+from typing import List
+import pillow_heif
+from io import BytesIO
+from datetime import datetime
 
 load_dotenv()
 
@@ -358,3 +363,88 @@ async def get_random_starbucks_drink():
     random_row = data.sample(n=1)
     drink_data = json.loads(random_row.to_json(orient='records'))[0]
     return {"drink": drink_data, "image": image_data[drink_data["Beverage"]]}  # Use 'records' for better formatting
+
+# Path to store the images
+PHOTO_DIR = "./photos"
+METADATA_FILE = os.path.join(PHOTO_DIR, "metadata.txt")
+
+# Ensure the directory exists
+os.makedirs(PHOTO_DIR, exist_ok=True)
+
+# Helper function to read metadata from the txt file
+def read_metadata():
+    metadata = {}
+    if os.path.exists(METADATA_FILE):
+        with open(METADATA_FILE, "r") as file:
+            for line in file:
+                filename, note, date = line.strip().split('|')
+                metadata[filename] = {'note': note, 'date': date}
+    return metadata
+
+# Function to convert HEIC to JPEG
+def convert_heic_to_jpeg(heic_path, jpeg_path):
+    heif_file = pillow_heif.open_heif(heic_path)
+    image = Image.frombytes(
+        heif_file.mode, 
+        heif_file.size, 
+        heif_file.data
+    )
+    image.save(jpeg_path, "JPEG")
+
+# Helper function to write metadata
+def write_metadata(filename, note, date):
+    with open(METADATA_FILE, "a") as file:
+        file.write(f"{filename}|{note}|{date}\n")
+
+# Upload endpoint with HEIC conversion
+@app.post("/upload/")
+async def upload_image(note: str, date: str, file: UploadFile = File(...)):
+    original_filename = file.filename
+    file_extension = original_filename.lower().split('.')[-1]
+
+    # Define file path for saving
+    file_path = os.path.join(PHOTO_DIR, original_filename)
+
+    # Save the uploaded file
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    # Check if the file is HEIC and convert it
+    if file_extension == "heic":
+        jpeg_filename = original_filename.rsplit(".", 1)[0] + ".jpg"
+        jpeg_path = os.path.join(PHOTO_DIR, jpeg_filename)
+
+        try:
+            convert_heic_to_jpeg(file_path, jpeg_path)
+            os.remove(file_path)  # Remove original HEIC file after conversion
+            final_filename = jpeg_filename
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"HEIC conversion failed: {str(e)}")
+    else:
+        final_filename = original_filename  # Keep original name for non-HEIC files
+
+    # Store metadata
+    write_metadata(final_filename, note, date)
+
+    return {"filename": final_filename, "note": note, "upload_date": date}
+
+
+# Endpoint to get image metadata
+@app.get("/images/{image_name}")
+async def get_image_metadata(image_name: str):
+    metadata = read_metadata()
+
+    if image_name not in metadata:
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return metadata[image_name]
+
+# Endpoint to serve image files
+@app.get("/images/file/{image_name}")
+async def get_image_file(image_name: str):
+    file_path = os.path.join(PHOTO_DIR, image_name)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        raise HTTPException(status_code=404, detail="Image file not found")
+    

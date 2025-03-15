@@ -37,5 +37,5 @@ jobs:
           docker build -t my_fast_api . || exit 1
           docker stop myfastapi || true
           docker rm myfastapi || true
-          docker run -d --network host --restart always --name myfastapi my_fast_api || exit 1
+          docker run -v /home/elianrenteria/photos:/app/photos -d --network host --restart always --name myfastapi my_fast_api || exit 1
 

@@ -29,6 +29,7 @@ opencv-python-headless==4.10.0.84
 packaging==24.1
 pandas==2.2.3
 pillow==10.4.0
+pillow_heif==0.22.0
 pip-tools==7.4.1
 platformdirs==4.3.6
 pooch==1.8.2
