@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, File, UploadFile, HTTPException
+from fastapi import FastAPI, Query, File, UploadFile, HTTPException, Form
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -400,7 +400,7 @@ def write_metadata(filename, note, date):
 
 # Upload endpoint with HEIC conversion
 @app.post("/api/upload_image")
-async def upload_image(note: str, date: str, file: UploadFile = File(...)):
+async def upload_image(note: str = Form(...), date: str = Form(...), file: UploadFile = File(...)):
     original_filename = file.filename
     file_extension = original_filename.lower().split('.')[-1]
 
