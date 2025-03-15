@@ -399,7 +399,7 @@ def write_metadata(filename, note, date):
         file.write(f"{filename}|{note}|{date}\n")
 
 # Upload endpoint with HEIC conversion
-@app.post("/upload/")
+@app.post("/api/upload_image")
 async def upload_image(note: str, date: str, file: UploadFile = File(...)):
     original_filename = file.filename
     file_extension = original_filename.lower().split('.')[-1]
@@ -431,7 +431,7 @@ async def upload_image(note: str, date: str, file: UploadFile = File(...)):
     return {"filename": final_filename, "note": note, "upload_date": date}
 
 # **New Endpoint: Get all images as Base64 with metadata**
-@app.get("/images")
+@app.get("api/images")
 async def get_all_images():
     metadata = read_metadata()
     images = []
@@ -453,7 +453,7 @@ async def get_all_images():
     return {"images": images}
 
 # Serve image files individually
-@app.get("/images/file/{image_name}")
+@app.get("/api/images/file/{image_name}")
 async def get_image_file(image_name: str):
     file_path = os.path.join(PHOTO_DIR, image_name)
     if os.path.exists(file_path):
