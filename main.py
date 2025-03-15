@@ -19,6 +19,7 @@ load_dotenv()
 
 open_weather_key = os.getenv('OPEN_WEATHER_KEY')
 generate_api_url = os.getenv('GENERATE_API_URL')
+whatbeats_api_url = os.getenv('WHATBEATS_API_URL')
 api_key = os.getenv('GENERATE_API_KEY')
 generate_note_prompt = os.getenv('GENERATE_NOTE_PROMPT')
 
@@ -133,9 +134,9 @@ async def what_beats(request: whatBeatsRequest):
     if request.key == api_key:
         m = f"""You are an AI for a game called "What Beats Rock?" The game works as follows:
 - The player submits an object that they believe can "beat" the current object.
-- You must determine if their input is valid.
-- If valid, accept it and provide a creative or logical explanation for why it wins.
-- If invalid, reject it and explain why.
+- You must determine if their input is valid or invalid based on basic logic and reasoning.
+- If valid, accept it and provide a short sentence creative or logical explanation for why it wins.
+- If invalid, reject it and explain why in a short sentence.
 - The accepted input becomes the new object for the next round.
 
 Current object: {request.current_object}  
@@ -148,7 +149,7 @@ Respond in this format:
 
 Make sure responses are engaging, fun, and logical!
 """
-        response = requests.post(generate_api_url, json={"message": m})
+        response = requests.post(whatbeats_api_url, json={"message": m})
         return response.json()["response"]
     return {"error": "Invalid API Key"}
 
