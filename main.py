@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import List
 import pillow_heif
 from io import BytesIO
-from datetime import datetime
+import base64
 
 load_dotenv()
 
@@ -371,14 +371,16 @@ METADATA_FILE = os.path.join(PHOTO_DIR, "metadata.txt")
 # Ensure the directory exists
 os.makedirs(PHOTO_DIR, exist_ok=True)
 
-# Helper function to read metadata from the txt file
+# Helper function to read metadata
 def read_metadata():
     metadata = {}
     if os.path.exists(METADATA_FILE):
         with open(METADATA_FILE, "r") as file:
             for line in file:
-                filename, note, date = line.strip().split('|')
-                metadata[filename] = {'note': note, 'date': date}
+                parts = line.strip().split('|')
+                if len(parts) == 3:
+                    filename, note, date = parts
+                    metadata[filename] = {"note": note, "date": date}
     return metadata
 
 # Function to convert HEIC to JPEG
@@ -409,7 +411,7 @@ async def upload_image(note: str, date: str, file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    # Check if the file is HEIC and convert it
+    # Convert HEIC files
     if file_extension == "heic":
         jpeg_filename = original_filename.rsplit(".", 1)[0] + ".jpg"
         jpeg_path = os.path.join(PHOTO_DIR, jpeg_filename)
@@ -428,18 +430,29 @@ async def upload_image(note: str, date: str, file: UploadFile = File(...)):
 
     return {"filename": final_filename, "note": note, "upload_date": date}
 
-
-# Endpoint to get image metadata
-@app.get("/images/{image_name}")
-async def get_image_metadata(image_name: str):
+# **New Endpoint: Get all images as Base64 with metadata**
+@app.get("/images")
+async def get_all_images():
     metadata = read_metadata()
+    images = []
 
-    if image_name not in metadata:
-        raise HTTPException(status_code=404, detail="Image not found")
+    for filename, data in metadata.items():
+        file_path = os.path.join(PHOTO_DIR, filename)
+        
+        if os.path.exists(file_path):
+            # Read image and encode as Base64
+            with open(file_path, "rb") as img_file:
+                base64_image = base64.b64encode(img_file.read()).decode("utf-8")
 
-    return metadata[image_name]
+            images.append({
+                "image": f"data:image/jpeg;base64,{base64_image}",  # Data URL format
+                "note": data["note"],
+                "date": data["date"]
+            })
 
-# Endpoint to serve image files
+    return {"images": images}
+
+# Serve image files individually
 @app.get("/images/file/{image_name}")
 async def get_image_file(image_name: str):
     file_path = os.path.join(PHOTO_DIR, image_name)
@@ -447,4 +460,3 @@ async def get_image_file(image_name: str):
         return FileResponse(file_path)
     else:
         raise HTTPException(status_code=404, detail="Image file not found")
-    
