@@ -431,7 +431,7 @@ async def upload_image(note: str, date: str, file: UploadFile = File(...)):
     return {"filename": final_filename, "note": note, "upload_date": date}
 
 # **New Endpoint: Get all images as Base64 with metadata**
-@app.get("api/images")
+@app.get("/api/images")
 async def get_all_images():
     metadata = read_metadata()
     images = []
