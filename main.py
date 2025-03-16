@@ -473,7 +473,8 @@ async def get_all_images():
             images.append({
                 "image": f"data:image/jpeg;base64,{base64_image}",  # Data URL format
                 "note": data["note"],
-                "date": data["date"]
+                "date": data["date"],
+                "filename": filename
             })
 
     return {"images": images}
