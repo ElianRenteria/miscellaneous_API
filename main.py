@@ -397,6 +397,32 @@ def convert_heic_to_jpeg(heic_path, jpeg_path):
 def write_metadata(filename, note, date):
     with open(METADATA_FILE, "a") as file:
         file.write(f"{filename}|{note}|{date}\n")
+        
+def delete_image(filename):
+    metadata = read_metadata()
+    
+    # Check if the image exists in metadata
+    if filename not in metadata:
+        raise HTTPException(status_code=404, detail="Image not found in metadata")
+
+    # Remove the image file if it exists
+    file_path = os.path.join(PHOTO_DIR, filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Rewrite metadata.txt without the deleted entry
+    with open(METADATA_FILE, "w") as file:
+        for img, data in metadata.items():
+            if img != filename:  # Keep other entries
+                file.write(f"{img}|{data['note']}|{data['date']}\n")
+
+    return {"message": "Image deleted successfully"}
+
+# FastAPI Endpoint
+@app.delete("/api/delete_image/{filename}")
+async def delete_image_endpoint(filename: str):
+    return delete_image(filename)
+
 
 # Upload endpoint with HEIC conversion
 @app.post("/api/upload_image")
