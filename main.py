@@ -159,6 +159,52 @@ Make sure responses are engaging, fun, and logical!
         return response.json()["response"]
     return {"error": "Invalid API Key"}
 
+@app.post("/api/whatbeats4")
+async def what_beats(request: whatBeatsRequest):
+    if request.key == api_key:
+        m = f"""You are an AI for a game called "What Beats Rock?" The game works as follows:
+- The player submits an object that they believe can "beat" the current object.
+- You must determine if their input is valid or invalid based on basic logic and reasoning.
+- If valid, accept it and provide a short sentence creative or logical explanation for why it wins.
+- If invalid, reject it and explain why in a short sentence.
+- The accepted input becomes the new object for the next round.
+
+Current object: {request.current_object}  
+Player's input: {request.player_input}  
+
+Respond in this format:
+- **Validity:** "Accepted" or "Rejected"  
+- **Explanation:** A short, fun, or logical reason why it beats or fails."  
+
+Make sure responses are engaging, fun, and logical!
+"""
+        response = requests.post(whatbeats_api_url+"4", json={"message": m})
+        return response.json()["response"]
+    return {"error": "Invalid API Key"}
+
+@app.post("/api/whatbeatsr1")
+async def what_beats(request: whatBeatsRequest):
+    if request.key == api_key:
+        m = f"""You are an AI for a game called "What Beats Rock?" The game works as follows:
+- The player submits an object that they believe can "beat" the current object.
+- You must determine if their input is valid or invalid based on basic logic and reasoning.
+- If valid, accept it and provide a short sentence creative or logical explanation for why it wins.
+- If invalid, reject it and explain why in a short sentence.
+- The accepted input becomes the new object for the next round.
+
+Current object: {request.current_object}  
+Player's input: {request.player_input}  
+
+Respond in this format:
+- **Validity:** "Accepted" or "Rejected"  
+- **Explanation:** A short, fun, or logical reason why it beats or fails."  
+
+Make sure responses are engaging, fun, and logical!
+"""
+        response = requests.post(whatbeats_api_url+"r1", json={"message": m})
+        return response.json()["response"]
+    return {"error": "Invalid API Key"}
+
 
 @app.post("/api/note")
 async def generate_note(request: GenerateNote):
