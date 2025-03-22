@@ -151,8 +151,7 @@ Player's input: {request.player_input}
 
 Respond in this format:
 - **Validity:** "Accepted" or "Rejected"  
-- **Explanation:** A short, fun, or logical reason why it beats or fails.  
-- **Next Challenge:** "Now, what beats {request.player_input}?"  
+- **Explanation:** A short, fun, or logical reason why it beats or fails."  
 
 Make sure responses are engaging, fun, and logical!
 """
