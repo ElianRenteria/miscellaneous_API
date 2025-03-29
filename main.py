@@ -546,4 +546,4 @@ async def generate_image(request: GenerateImage):
         return {"error": "Invalid API Key"}
     image = requests.post(generate_image_api_url+"/generate", json={"prompt": request.prompt})
     response = requests.get(generate_image_api_url+image.json()["image_url"])
-    return {"image": response.content}
+    return response.content
