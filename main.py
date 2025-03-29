@@ -540,7 +540,7 @@ async def get_image_file(image_name: str):
     else:
         raise HTTPException(status_code=404, detail="Image file not found")
     
-@app.get("api/generate_image")
+@app.get("/api/generate_image")
 async def generate_image(request: GenerateImage):
     if request.key != api_key:
         return {"error": "Invalid API Key"}
