@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query, File, UploadFile, HTTPException, Form
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import requests
@@ -546,4 +546,4 @@ async def generate_image(request: GenerateImage):
         return {"error": "Invalid API Key"}
     image = requests.post(generate_image_api_url+"/generate", json={"prompt": request.prompt})
     response = requests.get(generate_image_api_url+image.json()["image_url"])
-    return response.content
+    return StreamingResponse(BytesIO(response.content), media_type="image/png")
