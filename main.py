@@ -27,6 +27,7 @@ generate_api_url = os.getenv('GENERATE_API_URL')
 whatbeats_api_url = os.getenv('WHATBEATS_API_URL')
 api_key = os.getenv('GENERATE_API_KEY')
 generate_note_prompt = os.getenv('GENERATE_NOTE_PROMPT')
+generate_image_api_url = os.getenv('GENERATE_IMAGE_API_URL')
 
 app = FastAPI()
 
@@ -56,6 +57,10 @@ class GenerateNote(BaseModel):
     previous_note: str
     concepts: str
     key:str
+    
+class GenerateImage(BaseModel):
+    prompt: str
+    key: str
 
 def parse_json_from_string(string_with_json):
     start_index = string_with_json.find('{')
@@ -534,3 +539,11 @@ async def get_image_file(image_name: str):
         return FileResponse(file_path)
     else:
         raise HTTPException(status_code=404, detail="Image file not found")
+    
+@app.get("api/generate_image")
+async def generate_image(request: GenerateImage):
+    if request.key != api_key:
+        return {"error": "Invalid API Key"}
+    image = requests.post(generate_image_api_url+"/generate", json={"prompt": request.prompt})
+    response = requests.get(generate_image_api_url+image.json()["image_url"])
+    return {"image": response.content}

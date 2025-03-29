@@ -32,6 +32,7 @@ jobs:
             echo "GENERATE_NOTE_PROMPT=${{ secrets.GENERATE_NOTE_PROMPT }}" >> .env
             echo "GENERATE_API_KEY=${{ secrets.GENERATE_API_KEY }}" >> .env
             echo "WHATBEATS_API_URL=${{ secrets.WHATBEATS_API_URL }}" >> .env
+            echo "GENERATE_IMAGE_API_URL=${{ secrets.GENERATE_IMAGE_API_URL }}" >> .env
           fi
           
           docker build -t my_fast_api . || exit 1
