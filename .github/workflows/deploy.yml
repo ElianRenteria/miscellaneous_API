@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: LegionT5
+    runs-on: self-hosted
 
     steps:
     - name: Checkout code
@@ -24,7 +24,7 @@ jobs:
           echo "WHATBEATS_API_URL=${{ secrets.WHATBEATS_API_URL }}" >> .env
           echo "GENERATE_IMAGE_API_URL=${{ secrets.GENERATE_IMAGE_API_URL }}" >> .env
         fi
-        
+
     - name: Stop and Remove Existing Container
       run: |
         docker-compose down || true  # Stops and removes existing containers, but doesn’t fail if they don't exist
