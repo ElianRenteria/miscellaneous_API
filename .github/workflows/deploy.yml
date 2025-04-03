@@ -3,40 +3,36 @@ name: Deploy to Raspberry Pi
 on:
   push:
     branches:
-      - master  # or the branch you want to trigger deployment
+      - master
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: LegionT5
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: SSH to Raspberry Pi and Redeploy
-      uses: appleboy/ssh-action@v0.1.8
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
-        port: 2222
-        script: |
-          cd ~/miscellaneous_API || exit 1
-          git pull || exit 1
-          rm .env || true
-          # Check if .env file exists, if not, create it with default content
-          if [ ! -f .env ]; then
-            echo "Creating .env file..."
-            echo "OPEN_WEATHER_KEY=${{ secrets.OPEN_WEATHER_API_KEY }}" > .env
-            echo "GENERATE_API_URL=${{ secrets.GENERATE_API_URL }}" >> .env
-            echo "GENERATE_NOTE_PROMPT=${{ secrets.GENERATE_NOTE_PROMPT }}" >> .env
-            echo "GENERATE_API_KEY=${{ secrets.GENERATE_API_KEY }}" >> .env
-            echo "WHATBEATS_API_URL=${{ secrets.WHATBEATS_API_URL }}" >> .env
-            echo "GENERATE_IMAGE_API_URL=${{ secrets.GENERATE_IMAGE_API_URL }}" >> .env
-          fi
-          
-          docker build -t my_fast_api . || exit 1
-          docker stop myfastapi || true
-          docker rm myfastapi || true
-          docker run -v /home/elianrenteria/photos:/app/photos -d --network host --restart always --name myfastapi my_fast_api || exit 1
+    - name: Deploy
+      run: |
+        if [ ! -f .env ]; then
+          echo "Creating .env file..."
+          echo "OPEN_WEATHER_KEY=${{ secrets.OPEN_WEATHER_API_KEY }}" > .env
+          echo "GENERATE_API_URL=${{ secrets.GENERATE_API_URL }}" >> .env
+          echo "GENERATE_NOTE_PROMPT=${{ secrets.GENERATE_NOTE_PROMPT }}" >> .env
+          echo "GENERATE_API_KEY=${{ secrets.GENERATE_API_KEY }}" >> .env
+          echo "WHATBEATS_API_URL=${{ secrets.WHATBEATS_API_URL }}" >> .env
+          echo "GENERATE_IMAGE_API_URL=${{ secrets.GENERATE_IMAGE_API_URL }}" >> .env
+        fi
+        
+    - name: Stop and Remove Existing Container
+      run: |
+        docker-compose down || true  # Stops and removes existing containers, but doesn’t fail if they don't exist
 
+    - name: Remove Unused Images
+      run: |
+        docker image prune -af  # Cleans up old images to save space
+
+    - name: Deploy Application
+      run: |
+        docker-compose up -d --build

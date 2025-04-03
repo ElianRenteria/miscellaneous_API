@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    image: my_fast_api:latest
+    container_name: myFastApi
+    volumes:
+      - /home/elianrenteria/photos:/app/photos
+    networks:
+      - shared-network
+    restart: always
+
+networks:
+  shared-network:
+    external: true
